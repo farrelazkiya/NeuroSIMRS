@@ -157,8 +157,8 @@ export default function App() {
       let result = await chatSession.sendMessage(userMsg.content);
       
       // 2. Loop for Tool Handling (Function Calling)
-      while (result.response.functionCalls && result.response.functionCalls.length > 0) {
-          const toolCalls = result.response.functionCalls;
+      while (result.response.functionCalls && result.response.functionCalls().length > 0) {
+          const toolCalls = result.response.functionCalls();
           
           // Show a "System" message indicating work is being done
           const toolNames = toolCalls.map(tc => tc.name).join(', ');
@@ -184,13 +184,12 @@ export default function App() {
       }
 
       // 3. Final Text Response
-      // FIX: .text is a property, not a method, in the new SDK
-      const text = result.response.text;
+      const text = result.response.text();
       
       const botMsg: ChatMessage = {
         id: uuidv4(),
         role: 'model',
-        content: text || "I completed the task but have no further comment.", // Fallback if text is undefined
+        content: text || "I completed the task but have no further comment.",
         timestamp: new Date(),
         // Simple logic to guess which agent "spoke" based on content or context
         agent: text && text.includes("Agent 1") ? AgentRole.HOSPITAL_ADMIN 

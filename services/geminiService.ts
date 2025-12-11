@@ -1,8 +1,8 @@
-import { GoogleGenAI, FunctionDeclaration, Type } from "@google/genai";
+import { GoogleGenerativeAI, FunctionDeclaration, SchemaType } from "@google/generative-ai";
 
 // Initialize Gemini
 // NOTE: In a real production app, ensure API_KEY is set in environment variables.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.API_KEY || '');
 
 // --- Function Declarations ---
 
@@ -10,9 +10,9 @@ const getPatientDataTool: FunctionDeclaration = {
   name: "get_patient_data",
   description: "Agent 1: Retrieve medical records for a specific patient by name or ID.",
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      identifier: { type: Type.STRING, description: "Patient Name or ID (e.g., 'P001' or 'Budi')" },
+      identifier: { type: SchemaType.STRING, description: "Patient Name or ID (e.g., 'P001' or 'Budi')" },
     },
     required: ["identifier"],
   },
@@ -22,11 +22,11 @@ const createBillingProposalTool: FunctionDeclaration = {
   name: "create_billing_proposal",
   description: "Agent 1 (iDRG): Generate a billing proposal based on diagnosis. Returns ICD-10 code and estimated cost.",
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      patientId: { type: Type.STRING, description: "The ID of the patient" },
-      diagnosis: { type: Type.STRING, description: "The medical diagnosis" },
-      intervention: { type: Type.STRING, description: "Treatment or intervention provided" },
+      patientId: { type: SchemaType.STRING, description: "The ID of the patient" },
+      diagnosis: { type: SchemaType.STRING, description: "The medical diagnosis" },
+      intervention: { type: SchemaType.STRING, description: "Treatment or intervention provided" },
     },
     required: ["patientId", "diagnosis"],
   },
@@ -36,9 +36,9 @@ const checkMedicationStockTool: FunctionDeclaration = {
   name: "check_medication_stock",
   description: "Agent 2: Check current stock levels of a specific medication.",
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      medicationName: { type: Type.STRING, description: "Name of the drug" },
+      medicationName: { type: SchemaType.STRING, description: "Name of the drug" },
     },
     required: ["medicationName"],
   },
@@ -48,9 +48,9 @@ const analyzeCriticalLabTool: FunctionDeclaration = {
   name: "analyze_critical_lab",
   description: "Agent 3: Analyze a patient's latest lab results for critical values and flag them.",
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      patientId: { type: Type.STRING, description: "Patient ID" },
+      patientId: { type: SchemaType.STRING, description: "Patient ID" },
     },
     required: ["patientId"],
   },
@@ -60,10 +60,10 @@ const scheduleStaffTool: FunctionDeclaration = {
   name: "schedule_staff",
   description: "Agent 4: Assign a staff member to a specific shift to optimize resources.",
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      staffName: { type: Type.STRING, description: "Name of the staff member" },
-      shift: { type: Type.STRING, description: "Target shift: Morning, Afternoon, Night" },
+      staffName: { type: SchemaType.STRING, description: "Name of the staff member" },
+      shift: { type: SchemaType.STRING, description: "Target shift: Morning, Afternoon, Night" },
     },
     required: ["staffName", "shift"],
   },
@@ -103,10 +103,12 @@ COMPLIANCE:
 - Mention "COBIT DSS06" or "Security by Design" if discussing data access.
 `;
 
-export const chatSession = ai.chats.create({
+export const model = genAI.getGenerativeModel({
   model: modelName,
-  config: {
-    systemInstruction,
-    tools: [{ functionDeclarations: tools }],
-  },
+  systemInstruction,
+  tools: [{ functionDeclarations: tools }],
+});
+
+export const chatSession = model.startChat({
+  history: [],
 });

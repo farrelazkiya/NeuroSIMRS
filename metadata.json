@@ -1,0 +1,5 @@
+{
+  "name": "Copy of NeuroSIMRS - Agentic AI Hospital System",
+  "description": "A Multi-Agent System (MAS) simulator for Hospital Management (SIMRS). Features 4 autonomous AI agents handling Billing (iDRG), Pharmacy, Lab Diagnostics, and Staff Scheduling via a chat-based interface and live dashboard.",
+  "requestFramePermissions": []
+}

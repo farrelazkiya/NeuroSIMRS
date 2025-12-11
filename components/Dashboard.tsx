@@ -118,7 +118,7 @@ const Dashboard: React.FC<Props> = ({ state }) => {
       <div className="bg-gray-800 p-3 rounded-lg text-[10px] font-mono text-green-400 h-32 overflow-y-auto">
         <div className="mb-1 text-gray-400 font-bold border-b border-gray-700 pb-1">SYSTEM LOGS & COMPLIANCE</div>
         {state.logs.map((log, i) => (
-           <div key={i} className="mb-1 opacity-80">> {log}</div>
+           <div key={i} className="mb-1 opacity-80">&gt; {log}</div>
         ))}
       </div>
 
